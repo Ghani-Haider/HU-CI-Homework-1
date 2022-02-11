@@ -1,3 +1,4 @@
+from ast import literal_eval
 from random import randint, uniform
 import numpy as np
 from EA_problem import Problem
@@ -13,7 +14,6 @@ class Knapsack(Problem):
         #* dataset is: profit, weight
         #* keep adding in the chromosome until weight hits 878
         self._data = list()
-        self._population = list()
 
         file = open(path, "r")
         # for max items and knapsack capacity
@@ -29,29 +29,30 @@ class Knapsack(Problem):
 
     
     def populationInitialization(self, pop_size):
-        self._population = np.random.randint(2, size = (pop_size, self._max_items))
-        self._population = self._population.astype(int)
-        # print(self._population)
+        population = np.random.randint(2, size = (pop_size, self._max_items))
+        population = population.tolist()
+        # print(len(population))
+        return population
 
-    def fitnessFunction(self):
+    def fitnessFunction(self, population):
         # fitness value is the sum of profits, and zero if items in a chromosome outweight max knapsack weight
-        self._fitness = np.empty(self._population.shape[0])
-        for i in range(self._population.shape[0]):
-            # print("pop[i]", self._population[i])
+        fitness = np.empty(len(population))
+        for i in range(len(population)):
+            # print("pop[i]", population[i])
             total_profit = 0
             total_weight = 0
             for j in range(self._max_items):
-                total_profit += self._population[i][j] * self._data[j][0]
-                total_weight += self._population[i][j] * self._data[j][1]
+                total_profit += population[i][j] * self._data[j][0]
+                total_weight += population[i][j] * self._data[j][1]
                 # print(self._data[j], total_profit, total_weight)
             if total_weight <= self._max_capacity:
-                self._fitness[i] = total_profit
+                fitness[i] = total_profit
             else:
                 # not a valid solution
-                self._fitness[i] = 0 
-        self._fitness = self._fitness.astype(int)
-        # print(len(self._fitness))
-        return self._fitness
+                fitness[i] = 0 
+        fitness = fitness.tolist()
+        # print((fitness))
+        return fitness
     
     def crossOver(self, parentA, parentB):
         offspring = parentA[:len(parentA)//2] + parentB[len(parentB)//2:]
@@ -70,15 +71,15 @@ class Knapsack(Problem):
                 chromosome[random_pos] = 0
         # print(chromosome)
         # print(random_pos)
-        return chromosome  
+        return chromosome
 
 
-prob = Knapsack("f2_l-d_kp_20_878")
-prob.populationInitialization(population_size)
-prob.fitnessFunction()
-parenta = [1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1]
-parentb = [1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+# prob = Knapsack("f2_l-d_kp_20_878")
+# pop =prob.populationInitialization(population_size)
+# prob.fitnessFunction(pop)
+# parenta = [1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1]
+# parentb = [1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
-prob.crossOver(parenta, parentb)
-print(parenta)
-prob.mutation(parenta, 1)
+# prob.crossOver(parenta, parentb)
+# print(parenta)
+# prob.mutation(parenta, 1)
