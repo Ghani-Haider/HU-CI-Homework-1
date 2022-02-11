@@ -1,6 +1,7 @@
 from ctypes import util
 from EA_problem import *
 from selection_functions import *
+from knapsack import Knapsack
 
 population_size = 30
 no_of_offspring = 10
@@ -12,10 +13,14 @@ def evolutionaryAlgorithm(problem: Problem, parent_selection,
 survival_selection): #TODO balance between randomness and deterministic (parent is usually stochastic, see lectures)
     # Step 1: Initialize the population randomly or
     # with potentially good solutions
-    init_population = problem.populationInitialization(population_size)
+    #* list of chromosomes
+    population = problem.populationInitialization(population_size)
+    
 
     # Step 7: Go to Step 2 until the termination criteria are met.
-    while (termination(init_population) == False):
+    #! can also give generation
+    # while (termination(population) == False):
+    for i in range(no_of_generations):
 
         # Step 2: Compute the fitness of each individual in
         # the population
@@ -24,36 +29,53 @@ survival_selection): #TODO balance between randomness and deterministic (parent 
         # for chromosome in init_population:
         #     fitness_values.append((chromosome,
         #     problem.fitnessFunction(chromosome)))
-        fitness_values = problem.fitnessFunction()
+        #* list of fitness values corresponding to population
+        fitness_values = problem.fitnessFunction(population)
 
         # Step 3: Select parents using a selection procedure
         #! return val should be list
         #! parent should also be saved inside the problem
-        parent_list = []
-        for i in range(no_of_offspring):
-            #! parent selection to deal with selection function
-            parent = parent_selection #? individual or pair returned?
-            parent_list.append(parent)
+        
+        parent_list = random_selection(population, no_of_offspring, true)
+        
+        # for i in range(no_of_offspring):
+        #     #! parent selection to deal with selection function
+        #     parent = parent_selection #? individual or pair returned?
+        #     parent_list.append(parent)
 
         # Step 4: Create offspring by crossover and mutation
         # operators
         offspring_list = []
-        for i in range(no_of_offspring-1):
+        for i in range(no_of_offspring):
             # corssover
-            offspring = problem.crossOver(parent_list[i],
-                        parent_list[i+1])
+            offspring = problem.crossOver(parent_list[i][0],
+                        parent_list[i][1])
             # mutation
             offspring = problem.mutation(offspring, mutation_rate)
             offspring_list.append(offspring)
 
         # Step 5 Compute the fitness of the new offspring
         #TODO suggestion is to save offspring in the same population list, just calculate the fitness values before adding it to population
-        offspring_fitness_val = []
-        for i in range(no_of_offspring):
-            offspring_fitness_val.append((offspring_list[i],
-            problem.fitnessFunction(offspring_list[i])))
+        offspring_fitness_val = problem.fitnessFunction(offspring_list)
+        # add offsprings to population
+        # print('fit_val', len(fitness_values))
+        
+        population = population + offspring_list
+        fitness_values = fitness_values + offspring_fitness_val
+        # print(len(fitness_values))
+        # print(len(population))
+
+        # for i in range(no_of_offspring):
+        #     offspring_fitness_val.append((offspring_list[i],
+        #     problem.fitnessFunction(offspring_list[i])))
         
         # Step 6  Select members of population to die using a
         # selection procedure.
-        survivor = survival_selection
-        init_population = survivor
+        survivor = truncation(population, fitness_values, population_size)
+        population = survivor
+    return population
+
+prob = Knapsack("f2_l-d_kp_20_878")
+sol = evolutionaryAlgorithm(prob, 'a', 'b')
+print(prob.fitnessFunction(sol))
+print(sol)
