@@ -1,24 +1,22 @@
-from ctypes import util
-
 class Problem:
     def __init__():
-        util.raiseNotDefined()
+        pass
 
     def populationInitialization(self, pop_size):
         """
-            data: any csv file containing population information.
+            pop_size: Size of the population to be initialize.
         
         Initialize the population randomly or with potentially good solutions.
         """
-        util.raiseNotDefined()
+        pass
 
-    def fitnessFunction(self, population: list):
+    def fitnessFunction(self, population):
         """
-            chromosome: An individual in the population
+            Population: A list containing chromosomes
 
-        Returns fitness value of the chromosome.
+        Returns fitness values of the chromosomes in the population.
         """
-        util.raiseNotDefined()
+        pass
 
     def crossOver(self, parentA, parentB):
         """
@@ -28,20 +26,13 @@ class Problem:
         For given parents, this should return a new offspring based on infomration 
         sharing between parent according to some criteria.
         """
-        util.raiseNotDefined()
+        pass
 
     def mutation(self, chromosome, mutation_rate):
         """
             chromosome: An individual in the population
+            mutation_rate: Probability of chromosome being mutated
 
         Unitary operation that allows random change in offspring and return mutated offsrping.
         """
-        util.raiseNotDefined()
-    
-    def survivorSelection(self, chromosome):
-        """
-            chromosome: An individual in the population
-
-        Returns chromosomes with hight fitness values.
-        """
-        util.raiseNotDefined()
+        pass

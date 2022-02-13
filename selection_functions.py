@@ -1,24 +1,22 @@
 import random
 import numpy as np
-from matplotlib.pyplot import switch_backend
-from sympy import false, true
 
 def fitness_proportional(population, fitness_values, no_of_selection, max_prob):
     sum_of_fitness = 0
     cumulative_fitness = 0
     fitness_values_cumulative = list()
-    if max_prob == true:
+    if max_prob == True:
         sum_of_fitness = sum(fitness_values)
         for i in range(len(population)):
             cumulative_fitness += (fitness_values[i] / sum_of_fitness)
             fitness_values_cumulative.append(cumulative_fitness)
     else:
         for fitness in fitness_values:
-            sum_of_fitness += 1 / fitness
+            sum_of_fitness += 1 / (fitness + 1)
         for i in range(len(population)):
-            cumulative_fitness += ((1 / fitness_values[i]) / sum_of_fitness)
+            cumulative_fitness += ((1 / (fitness_values[i] + 1)) / sum_of_fitness)
             fitness_values_cumulative.append(cumulative_fitness)
-    #* calculate best chromosome
+    # calculate best chromosome
     new_population = list()
     for i in range(no_of_selection):
         random_val = random.uniform(0,1)
@@ -33,17 +31,17 @@ def rank_based(population, fitness_values, no_of_selection, max_prob):
     total_fitness = 0
     ranks = np.zeros(len(temp_fitness), dtype=int).tolist()
     for i in range(len(temp_fitness)):
-        val = max(temp_fitness) if max_prob == true else min(temp_fitness)
+        val = max(temp_fitness) if max_prob == True else min(temp_fitness)
         ranks[temp_fitness.index(val)] = len(temp_fitness) - (i)
         total_fitness += (i + 1)
-        temp_fitness[temp_fitness.index(val)] = -9999999999 if max_prob == true else 9999999999
+        temp_fitness[temp_fitness.index(val)] = -9999999999 if max_prob == True else 9999999999
     # fitness proportion based on ranks
     for i in range(len(temp_fitness)):
         ranks[i] = ranks[i] / total_fitness
     # cumulative
     for i in range(1, len(temp_fitness)):
         ranks[i] = ranks[i] + ranks[i-1]
-    #* calculate best chromosome
+    # calculate best chromosome
     new_population = list()
     for i in range(no_of_selection):
         random_val = random.uniform(0,1)
@@ -51,13 +49,10 @@ def rank_based(population, fitness_values, no_of_selection, max_prob):
             if (random_val <= ranks[j]):
                 new_population.append(population[j])
                 break
-    # print(ranks)
-    # print(new_population)
     return new_population
 
 def binary_tournament(population, fitness_values, no_of_selection, max_prob):
     new_population = list()
-    # print(temp)
     for i in range(no_of_selection):
         random_val_x = random.randint(0, len(population)-1)
         chromosome_x = population[random_val_x]
@@ -74,37 +69,33 @@ def binary_tournament(population, fitness_values, no_of_selection, max_prob):
             else:
                 new_population.append(chromosome_x)
     return new_population
-    # for i in range(no_of_selection):
-    #     continue
 
 def truncation(population, fitness_values, no_of_selection, max_prob):
     temp = fitness_values.copy()
     new_population = list()
-    # print(len(fitness_values))
-    # print(len(population))
     for i in range(no_of_selection):
-        best_chromosome = max(temp) if max_prob == true else min(temp)
-
+        best_chromosome = max(temp) if max_prob == True else min(temp)
         new_population.append(population[temp.index(best_chromosome)])
-        temp[temp.index(best_chromosome)] = -9999999999 if max_prob == true else 9999999999
+        temp[temp.index(best_chromosome)] = -9999999999 if max_prob == True else 9999999999
     return new_population
 
 def random_selection(population, fitness_values, no_of_selection, max_prob):
     new_population = list()
     temp = population.copy()
-    # print(temp)
     for i in range(no_of_selection):
         random_val = random.randint(0, len(temp)-1)
         chromosome = temp[random_val]
-        # temp.remove(chromosome)
         new_population.append(chromosome)
     return new_population
 
-def termination():
-    pass
-# def selection_function(selection_func, total_size):
-
-
-# population = ['a', 'b', 'c', 'd', 'e']
-# fit = [10,15,20,30,25]
-# print(rank_based(population, fit, 2, true))
+def selection_function(population, fitness_values, no_of_selection, max_prob, selection_method):
+    if selection_method == "FPS":
+        return fitness_proportional(population, fitness_values, no_of_selection, max_prob)
+    elif selection_method == "RBS":
+        return rank_based(population, fitness_values, no_of_selection, max_prob)
+    elif selection_method == "Binary Tournament":
+        return binary_tournament(population, fitness_values, no_of_selection, max_prob)
+    elif selection_method == "Truncation":
+        return truncation(population, fitness_values, no_of_selection, max_prob)
+    elif selection_method == "Random":
+        return random_selection(population, fitness_values, no_of_selection, max_prob)
