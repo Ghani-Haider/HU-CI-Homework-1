@@ -12,7 +12,7 @@ class Problem:
         """
         util.raiseNotDefined()
 
-    def fitnessFunction(self):
+    def fitnessFunction(self, population: list):
         """
             chromosome: An individual in the population
 
