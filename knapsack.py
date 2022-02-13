@@ -36,7 +36,7 @@ class Knapsack(Problem):
 
     def fitnessFunction(self, population):
         # fitness value is the sum of profits, and zero if items in a chromosome outweight max knapsack weight
-        fitness = np.empty(len(population))
+        fitness = np.zeros(len(population)).tolist()
         for i in range(len(population)):
             # print("pop[i]", population[i])
             total_profit = 0
@@ -50,7 +50,6 @@ class Knapsack(Problem):
             else:
                 # not a valid solution
                 fitness[i] = 0 
-        fitness = fitness.tolist()
         # print((fitness))
         return fitness
     
@@ -61,16 +60,12 @@ class Knapsack(Problem):
         return offspring
     
     def mutation(self, chromosome, mutation_rate):
-        if uniform(0, 1) > mutation_rate:
-            return chromosome
-        else:
+        if uniform(0, 1) < mutation_rate:
             random_pos = randint(0, len(chromosome)-1)
             if chromosome[random_pos] == 0:
                 chromosome[random_pos] = 1
             else:
                 chromosome[random_pos] = 0
-        # print(chromosome)
-        # print(random_pos)
         return chromosome
 
 
